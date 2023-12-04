@@ -1,0 +1,420 @@
+openapi: 3.0.0
+info:
+  title: Course CRUD API
+  description: CRUD API for managing courses
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /courses:
+    get:
+      tags:
+        - Courses
+      summary: Get a list of courses
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        status:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                        deletedAt:
+                          type: string
+                          format: date-time
+                        premium:
+                          type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                data:
+                  - id: 1
+                    title: Introduction to Programming
+                    description: Learn the basics of programming
+                    status: Published
+                    createdAt: "2023-12-02T18:41:24Z"
+                    deletedAt: null
+                    premium: false
+                  - id: 2
+                    title: Advanced Data Structures
+                    description: Explore advanced data structure concepts
+                    status: Pending
+                    createdAt: "2023-12-02T18:41:24Z"
+                    deletedAt: null
+                    premium: false
+                message: Courses Retrieved.
+                status: OK
+                timestamp: "2023-12-04T13:24:42.913009"
+    post:
+      tags:
+        - Courses
+      summary: Create a new course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Course title (required)
+                  example: Web Development Fundamentals
+                description:
+                  type: string
+                  description: Course description
+                  example: Build foundational skills for web development
+                status:
+                  type: string
+                  enum: ["Pending", "Published"]
+                  description: Course status ("Pending" or "Published")
+                createdAt:
+                  type: string
+                  format: date-time
+                  description: Date of course creation
+                  example: 2011-04-22T01:45:14
+                deletedAt:
+                  type: string
+                  format: date-time
+                  description: Date of course deletion
+                  example: 2020-02-22T06:21:11
+                premium:
+                  type: boolean
+                  description: Indicates whether the course is premium
+              required:
+                - title
+                - status
+                - premium
+                - createdAt
+      responses:
+        '201':
+          description: Successful creation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      status:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                      deletedAt:
+                        type: string
+                        format: date-time
+                      premium:
+                        type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                data:
+                  id: 21
+                  title: Web Development Fundamentals
+                  description: Build foundational skills for web development
+                  status: Published
+                  createdAt: "2011-04-22T01:45:14"
+                  deletedAt: "2020-02-22T06:21:11"
+                  premium: true
+                message: Course Added.
+                status: CREATED
+                timestamp: "2023-12-04T14:14:48.0603934"
+        '400':
+          description: Unsuccessfull creation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                error: "Status should be either 'Published' or 'Pending'"
+                status: BAD_REQUEST
+                timestamp: "2023-12-04T14:21:21.8429263"
+  
+  /courses/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Course ID
+        schema:
+          type: integer
+    get:
+      tags:
+        - Courses
+      summary: Retrieve a specific course
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      status:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                      deletedAt:
+                        type: string
+                        format: date-time
+                      premium:
+                        type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                data:
+                  id: 1
+                  title: Introduction to Programming
+                  description: Learn the basics of programming
+                  status: Published
+                  createdAt: "2023-12-02T18:41:24Z"
+                  deletedAt: null
+                  premium: false
+                message: Course 1 Retrieved.
+                status: OK
+                timestamp: "2023-12-04T14:30:27.3709818"
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                error: "Course not found"
+                status: NOT_FOUND
+                timestamp: "2023-12-04T14:35:00.0000000"
+    
+    put:
+      tags:
+        - Courses
+      summary: Update details of a specific course
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                title:
+                  type: string
+                  description: Course title (required)
+                  example: Introduction to Programming
+                description:
+                  type: string
+                  description: Course description
+                  example: Learn the basics of programming
+                status:
+                  type: string
+                  enum: ["Pending", "Published"]
+                  description: Course status ("Pending" or "Published")
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: 2011-04-22T01:45:14
+                deletedAt:
+                  type: string
+                  format: date-time
+                  example: null
+                premium:
+                  type: boolean
+              required:
+                - title
+                - status
+                - premium
+                - createdAt
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      status:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date-time
+                      deletedAt:
+                        type: string
+                        format: date-time
+                      premium:
+                        type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                data:
+                  id: 1
+                  title: Introduction to Programming
+                  description: Learn the basics of programming
+                  status: Pending
+                  createdAt: "2011-04-22T01:45:14Z"
+                  deletedAt: null
+                  premium: true
+                message: Course 1 Updated.
+                status: OK
+                timestamp: "2023-12-04T14:37:49.8615988"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                error: "Status should be either 'Published' or 'Pending'"
+                status: BAD_REQUEST
+                timestamp: "2023-12-04T14:38:09.8873516"
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                error: "Course with id: 212 does not exist."
+                status: NOT_FOUND
+                timestamp: "2023-12-04T14:39:07.4622267"            
+                
+    delete:
+      tags:
+        - Courses
+      summary: Delete a specific course
+      responses:
+        '200':
+          description: Successful deletion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: boolean
+                  message:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                data: true
+                message: Course 21 Deleted.
+                status: OK
+                timestamp: "2023-12-04T14:48:25.0578512"
+        '404':
+          description: Course not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+                    format: date-time
+              example:
+                error: "Course with id: 212 does not exist."
+                status: NOT_FOUND
+                timestamp: "2023-12-04T14:49:30.1234567"            
